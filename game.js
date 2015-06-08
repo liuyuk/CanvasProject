@@ -50,10 +50,30 @@ function init() {
     canvas = document.getElementById("myCanvas");
     ctx = canvas.getContext("2d");
     
-    requestAnimation();
+    document.addEventListener('mousedown', function (event) {
+
+    var mousePosition = getMousePos(canvas, event);
+    var mouseX = mousePosition.x;
+    var mouseY = mousePosition.y;
+
+    if (mouseInBug(mouseX, mouseY, bugger.x, bugger.y, bugger.width, bugger.length)) {
+        ctx.clearRect(bugger.x - 10, bugger.y - 30, 40, 40);
+        ctx.drawImage(apple, food.x, food.y, 40, 40);
+        notover = false;
+    }
+                        
+    }, false);
+    
+    if (notover === true) {
+        requestAnimation();
+    }
 }
 
 function requestAnimation() {
+    if (detectCollision(food, bugger)) {
+        notover = false;
+    }
+    
     if (notover === true) {
         requestAnimationFrame(requestAnimation);
     }
@@ -61,10 +81,25 @@ function requestAnimation() {
     draw();
 }
 
-//function setBug(bugger) {
-//    bugger.x = Math.random() * (ctx.width - bugWidth);
-//    bugger.y = ctx.height - bugLength;
-//}
+function mouseInBug(mx, my, bx, by, bw, bl) {
+    var dx = mx - bx;
+    var dy = my - by;
+    
+    return (dx * dx + dy * dy <= bw * bl);
+}
+
+function getMousePos(canvas, evt) {
+    var r = canvas.getBoundingClientRect();
+    
+    return {
+        x: evt.clientX - r.left,
+        y: evt.clientY - r.top
+    };
+}
+
+function detectCollision(a, b) {
+    return !(b.x > a.x + a.width || b.x + b.width < a.x || b.y > a.y + a.height || b.y + b.height < a.y);
+}
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -82,15 +117,14 @@ function draw() {
         ctx.fillStyle = "Red";
     }
     if (bugger.speed === 150) {
-        ctx.fillStyle = "Black"
+        ctx.fillStyle = "Black";
     }
     ctx.stroke();
     ctx.fill();
     
     if (bugger.x < food.x) {
         bugger.x += (food.x + food.length - bugger.x) / ((food.y - bugger.y) / (bugger.speed * 0.06));
-    }
-    else if (bugger.x > food.x) {
+    } else if (bugger.x > food.x) {
         bugger.x -= (bugger.x - (food.x + food.length)) / ((food.y - bugger.y) / (bugger.speed * 0.06));
     }
     bugger.y += bugger.speed * 0.06;
@@ -98,4 +132,4 @@ function draw() {
     ctx.drawImage(apple, food.x, food.y, 40, 40);
 }
 
-init();
+window.onload = init;
