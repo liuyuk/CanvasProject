@@ -3,11 +3,12 @@ var ctx;
 
 var startingScore = 0;
 var score;
-var notover = true;
+var notover = 1;
 
 var bugWidth = 10;
 var bugLength = 40;
-var bugSpeed = generateSpeed();
+var bugSpeed = 0;
+var buggers = [];
 
 var appleWidth = 40;
 var appleLength = 40;
@@ -15,18 +16,25 @@ var appleLength = 40;
 var apple = new Image();
 apple.src = '/assets/apple.png';
 
-var bugger = {
-    width: bugWidth,
-    length: bugLength,
-    speed: bugSpeed,
-    x: 400 * Math.random(),
-    y: 0
-};
+var lastTime = performance.now() / 10;
+
+function addBug() {
+
+    var bugger = {
+        width: bugWidth,
+        length: bugLength,
+        speed: generateSpeed(),
+        x: 400 * Math.random(),
+        y: 0
+    };
+    
+    buggers.push(bugger);
+}
 
 var food = {
     width: appleWidth,
     length: appleLength,
-    x: 150,
+    x: 200,
     y: 500
 };
 
@@ -55,30 +63,57 @@ function init() {
     var mousePosition = getMousePos(canvas, event);
     var mouseX = mousePosition.x;
     var mouseY = mousePosition.y;
-
-    if (mouseInBug(mouseX, mouseY, bugger.x, bugger.y, bugger.width, bugger.length)) {
-        ctx.clearRect(bugger.x - 10, bugger.y - 30, 40, 40);
-        ctx.drawImage(apple, food.x, food.y, 40, 40);
-        notover = false;
+        
+    var p;
+        
+    for (p = 0; p < buggers.length; p += 1){
+        
+        var bugger = buggers[p];
+        if (mouseInBug(mouseX, mouseY, bugger.x, bugger.y, bugger.width, bugger.length)) {
+            notover = 3;
+            buggers.splice(p, 1);
+        }
     }
                         
     }, false);
     
-    if (notover === true) {
+    if (notover === 1) {
         requestAnimation();
     }
 }
 
-function requestAnimation() {
-    if (detectCollision(food, bugger)) {
-        notover = false;
-    }
+function requestAnimation(time) {
     
-    if (notover === true) {
+    if (notover === 1 || notover === 3) {
         requestAnimationFrame(requestAnimation);
     }
     
     draw();
+    
+    var j;
+    
+    var elapsed = time - lastTime;
+    lastTime = time;
+    
+    var countdown = 20;
+    
+    countdown -= elapsed;
+//    if (coundown < 0) {
+//        addBug();
+//        countdown = 3000;
+//    }
+    
+    if (countdown > 6) {
+        addBug();
+        notover = 1;
+        countdown = 20;
+    }
+    
+    for (j = 0; j < buggers.length; j += 1) {
+        if (detectCollision(buggers[j], food)) {
+            notover = 2;
+        }
+    }
 }
 
 function mouseInBug(mx, my, bx, by, bw, bl) {
@@ -98,38 +133,53 @@ function getMousePos(canvas, evt) {
 }
 
 function detectCollision(a, b) {
-    return !(b.x > a.x + a.width || b.x + b.width < a.x || b.y > a.y + a.height || b.y + b.height < a.y);
+    return (b.y < a.y);
 }
 
 function draw() {
+    var k;
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    ctx.beginPath();
-    ctx.ellipse(bugger.x, bugger.y, bugger.width / 4, bugger.length / 4, 0, 0, Math.PI * 2);
-    ctx.closePath();
+    for (k = 0; k < buggers.length; k += 1) {
+        
+        var bugger = buggers[k];
+        
+        ctx.beginPath();
+        ctx.ellipse(bugger.x, bugger.y, bugger.width / 4, bugger.length / 4, 0, 0, Math.PI * 2);
+        ctx.closePath();
     
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "Black";
-    if (bugger.speed === 60) {
-        ctx.fillStyle = "Orange";
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "Black";
+        if (bugger.speed === 60) {
+            ctx.fillStyle = "Orange";
+        }
+        if (bugger.speed === 75) {
+            ctx.fillStyle = "Red";
+        }
+        if (bugger.speed === 150) {
+            ctx.fillStyle = "Black";
+        }
+        ctx.stroke();
+        ctx.fill();
+
+        if (bugger.x < food.x) {
+            bugger.x += (food.x + food.length - bugger.x) / ((food.y - bugger.y) / (bugger.speed * 0.06));
+        } 
+        if (bugger.x > food.x) {
+            bugger.x -= (bugger.x - (food.x + food.length)) / ((food.y - bugger.y) / (bugger.speed * 0.06));
+        }
+        bugger.y += bugger.speed * 0.06;
+        
+        if (notover === 3){
+            ctx.clearRect(bugger.x - 10, bugger.y - 30, 40, 40);
+            ctx.drawImage(apple, food.x, food.y, 40, 40);
+        }
+        
     }
-    if (bugger.speed === 75) {
-        ctx.fillStyle = "Red";
-    }
-    if (bugger.speed === 150) {
-        ctx.fillStyle = "Black";
-    }
-    ctx.stroke();
-    ctx.fill();
-    
-    if (bugger.x < food.x) {
-        bugger.x += (food.x + food.length - bugger.x) / ((food.y - bugger.y) / (bugger.speed * 0.06));
-    } else if (bugger.x > food.x) {
-        bugger.x -= (bugger.x - (food.x + food.length)) / ((food.y - bugger.y) / (bugger.speed * 0.06));
-    }
-    bugger.y += bugger.speed * 0.06;
     
     ctx.drawImage(apple, food.x, food.y, 40, 40);
+    
 }
 
 window.onload = init;
