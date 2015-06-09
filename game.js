@@ -94,7 +94,7 @@ function requestAnimation() {
     
     for (j = 0; j < buggers.length; j += 1) {
         if (detectCollision(buggers[j], food)) {
-            notover = 2;
+            notover = true;
         }
     }
 
