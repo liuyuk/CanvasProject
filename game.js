@@ -9,7 +9,7 @@ var bugWidth = 10;
 var bugLength = 40;
 var bugSpeed = 0;
 var buggers = [];
-setInterval(addBug, 1000);
+setInterval(addBug, 3000);
 
 var appleWidth = 40;
 var appleLength = 40;
@@ -18,8 +18,6 @@ var countdown = 0;
 
 var apple = new Image();
 apple.src = '/assets/apple.png';
-
-var lastTime = performance.now();
 
 function addBug() {
 
