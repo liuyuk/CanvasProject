@@ -3,13 +3,13 @@ var ctx;
 
 var startingScore = 0;
 var score;
-var notover = false;
+var over = 0;
 
 var bugWidth = 10;
 var bugLength = 40;
 var bugSpeed = 0;
 var buggers = [];
-setInterval(addBug, 3000);
+setInterval(addBug, 1000 + Math.random() * 2000);
 
 var appleWidth = 40;
 var appleLength = 40;
@@ -17,16 +17,24 @@ var appleLength = 40;
 var countdown = 0;
 
 var apple = new Image();
-apple.src = '/assets/apple.png';
+apple.src = 'assets/apple.png';
+
+var score = 0;
+
+var timer = 0;
+setInterval(updateTimer, 1000);
 
 function addBug() {
+    
+    bugSpeed = generateSpeed();
 
     var bugger = {
         width: bugWidth,
         length: bugLength,
-        speed: generateSpeed(),
+        speed: bugSpeed,
         x: 400 * Math.random(),
         y: 0,
+        score: generateScore(bugSpeed),
         dead: false
     };
     
@@ -37,7 +45,7 @@ var food = {
     width: appleWidth,
     length: appleLength,
     x: 200,
-    y: 500
+    y: 600
 };
 
 function generateSpeed() {
@@ -54,6 +62,26 @@ function generateSpeed() {
     }
     
     return ans;
+}
+
+function generateScore(speed) {
+    var temp = 0;
+    if (speed === 60 || speed === 80){
+        temp = 1
+    } 
+    
+    if (speed === 75 || speed === 100){
+        temp = 3
+    }
+    if (speed === 150 || speed === 200){
+        temp = 5
+    }
+    
+    return temp;
+}
+
+function updateTimer() {
+    timer += 1   
 }
 
 function init() {
@@ -73,20 +101,26 @@ function init() {
         var bugger = buggers[p];
         if (mouseInBug(mouseX, mouseY, bugger.x, bugger.y, bugger.width, bugger.length)) {
             bugger.dead = true;
+            score += bugger.score;
             buggers.splice(p, 1);
         }
+    }
+        
+    if (over === 1 | over === 2) {
+        location.reload();
     }
                         
     }, false);
     
-    if (notover === false) {
+    if (over === 0) {
         requestAnimation();
     }
+    
 }
 
 function requestAnimation() {
     
-    if (notover === false) {
+    if (over === 0) {
         requestAnimationFrame(requestAnimation);
     }
     
@@ -94,11 +128,25 @@ function requestAnimation() {
     
     for (j = 0; j < buggers.length; j += 1) {
         if (detectCollision(buggers[j], food)) {
-            notover = true;
+            over = 1;
         }
     }
 
     draw();
+    
+    if (over === 1) {
+        ctx.font = "50px Times New Roman";
+        ctx.fillStyle = "black";
+        ctx.fillText("GAME OVER", 60, 350);
+    }
+    
+    if (timer === 15) {
+        ctx.font = "50px Times New Roman";
+        ctx.fillStyle = "black";
+        ctx.fillText("YOU WIN", 100, 350);
+        
+        over = 2;
+    }
 }
 
 function mouseInBug(mx, my, bx, by, bw, bl) {
@@ -162,6 +210,14 @@ function draw() {
     }
     
     ctx.drawImage(apple, food.x, food.y, 40, 40);
+    
+    ctx.font = "16px Times New Roman";
+    ctx.fillStyle = "black";
+    ctx.fillText("Score: " + score, 300, 20);
+    
+    ctx.font = "16px Times New Roman";
+    ctx.fillStyle = "black";
+    ctx.fillText("Timer: " + timer, 50, 20);
     
 }
 
