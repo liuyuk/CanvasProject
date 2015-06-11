@@ -19,6 +19,9 @@ var countdown = 0;
 var apple = new Image();
 apple.src = 'assets/apple.png';
 
+var bg = new Image();
+bg.src = 'assets/bg1.png';
+
 var score = 0;
 
 var timer = 0;
@@ -45,7 +48,7 @@ var food = {
     width: appleWidth,
     length: appleLength,
     x: 200,
-    y: 600
+    y: 530
 };
 
 function generateSpeed() {
@@ -87,6 +90,7 @@ function updateTimer() {
 function init() {
     canvas = document.getElementById("myCanvas");
     ctx = canvas.getContext("2d");
+    
     
     document.addEventListener('mousedown', function (event) {
 
@@ -173,6 +177,8 @@ function draw() {
     var k;
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.drawImage(bg, 0, 30, 400, 600);
     
     ctx.beginPath();
     ctx.moveTo(0, 30);
