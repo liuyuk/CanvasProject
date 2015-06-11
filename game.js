@@ -33,7 +33,7 @@ function addBug() {
         length: bugLength,
         speed: bugSpeed,
         x: 400 * Math.random(),
-        y: 0,
+        y: 40,
         score: generateScore(bugSpeed),
         dead: false
     };
@@ -174,6 +174,13 @@ function draw() {
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    ctx.beginPath();
+    ctx.moveTo(0, 30);
+    ctx.lineTo(400, 30);
+    ctx.stroke();
+    ctx.lineWidth = 2;
+    ctx.closePath;
+    
     for (k = 0; k < buggers.length; k += 1) {
         
         var bugger = buggers[k];
@@ -184,7 +191,6 @@ function draw() {
             ctx.ellipse(bugger.x, bugger.y, bugger.width / 4, bugger.length / 4, 0, 0, Math.PI * 2);
             ctx.closePath();
 
-            ctx.lineWidth = 4;
             if (bugger.speed === 60) {
                 ctx.fillStyle = "Orange";
             }
