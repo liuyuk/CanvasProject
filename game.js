@@ -14,8 +14,6 @@ setInterval(addBug, 1000 + Math.random() * 2000);
 var appleWidth = 40;
 var appleLength = 40;
 
-var countdown = 0;
-
 var apple = new Image();
 apple.src = 'assets/apple.png';
 
@@ -24,7 +22,7 @@ bg.src = 'assets/bg1.png';
 
 var score = 0;
 
-var timer = 9;
+var timer = 15;
 setInterval(updateTimer, 1000);
 
 var level = 1;
