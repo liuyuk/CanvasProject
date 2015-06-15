@@ -24,8 +24,10 @@ bg.src = 'assets/bg1.png';
 
 var score = 0;
 
-var timer = 0;
+var timer = 9;
 setInterval(updateTimer, 1000);
+
+var level = 1;
 
 function addBug() {
     
@@ -54,14 +56,29 @@ var food = {
 function generateSpeed() {
     var temp = Math.floor(Math.random() * 9 + 1);
     var ans = 0;
-    if (temp <= 4) {
-        ans = 60;
+    
+    if (level === 1){
+        if (temp <= 4) {
+            ans = 60;
+        }
+        if (temp > 4 && temp <= 7) {
+            ans = 75;
+        }
+        if (temp > 7) {
+            ans = 150;
+        }
     }
-    if (temp > 4 && temp <= 7) {
-        ans = 75;
-    }
-    if (temp > 7) {
-        ans = 150;
+    
+        if (level === 2){
+        if (temp <= 4) {
+            ans = 80;
+        }
+        if (temp > 4 && temp <= 7) {
+            ans = 100;
+        }
+        if (temp > 7) {
+            ans = 200;
+        }
     }
     
     return ans;
@@ -84,7 +101,7 @@ function generateScore(speed) {
 }
 
 function updateTimer() {
-    timer += 1   
+    timer -= 1   
 }
 
 function init() {
@@ -116,6 +133,19 @@ function init() {
                         
     }, false);
     
+    document.addEventListener('keypress', function(event) {
+        
+            if (over === 0){
+                over = 3;
+            }
+            
+            else if (over === 3){
+                requestAnimationFrame(requestAnimation);
+                over = 0;
+            }
+        
+    }, false);
+    
     if (over === 0) {
         requestAnimation();
     }
@@ -141,13 +171,17 @@ function requestAnimation() {
     if (over === 1) {
         ctx.font = "50px Times New Roman";
         ctx.fillStyle = "black";
-        ctx.fillText("GAME OVER", 60, 350);
+        ctx.fillText("GAME OVER", 60, 320);
+        ctx.font = "25px Times New Roman";
+        ctx.fillText("click to restart", 120, 370);
     }
     
-    if (timer === 15) {
+    if (timer === 0) {
         ctx.font = "50px Times New Roman";
         ctx.fillStyle = "black";
-        ctx.fillText("YOU WIN", 100, 350);
+        ctx.fillText("YOU WIN", 100, 320);
+        ctx.font = "25px Times New Roman";
+        ctx.fillText("Your score is: " + score, 130, 370);
         
         over = 2;
     }
@@ -197,13 +231,13 @@ function draw() {
             ctx.ellipse(bugger.x, bugger.y, bugger.width / 4, bugger.length / 4, 0, 0, Math.PI * 2);
             ctx.closePath();
 
-            if (bugger.speed === 60) {
+            if (bugger.speed === 60 || bugger.speed === 80) {
                 ctx.fillStyle = "Orange";
             }
-            if (bugger.speed === 75) {
+            if (bugger.speed === 75 || bugger.speed === 100) {
                 ctx.fillStyle = "Red";
             }
-            if (bugger.speed === 150) {
+            if (bugger.speed === 150 || bugger.speed === 200) {
                 ctx.fillStyle = "Black";
             }
             ctx.stroke();
