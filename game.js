@@ -22,11 +22,7 @@ bg.src = 'assets/bg1.png';
 
 var score = 0;
 
-<<<<<<< HEAD
 var timer = 60;
-=======
-var timer = 15;
->>>>>>> origin/master
 setInterval(updateTimer, 1000);
 
 var level = 1;
