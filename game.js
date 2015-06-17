@@ -24,10 +24,16 @@ bg.src = 'assets/bg1.png';
 
 var score = 0;
 
-var timer = 9;
+var timer = 60;
 setInterval(updateTimer, 1000);
 
 var level = 1;
+
+var foods = [];
+var f;
+for (f = 0; f < 5; f += 1) {
+    addFood(f);
+}
 
 function addBug() {
     
@@ -46,12 +52,17 @@ function addBug() {
     buggers.push(bugger);
 }
 
-var food = {
-    width: appleWidth,
-    length: appleLength,
-    x: 200,
-    y: 530
-};
+function addFood(i) {
+    
+    var food = {
+        width: appleWidth,
+        length: appleLength,
+        x: 50 + Math.random() * 200,
+        y: 400 + Math.random() * i * 30
+    };
+    
+    foods.push(food);
+}
 
 function generateSpeed() {
     var temp = Math.floor(Math.random() * 9 + 1);
@@ -158,11 +169,18 @@ function requestAnimation() {
         requestAnimationFrame(requestAnimation);
     }
     
-    var j;
+    var j, k;
     
     for (j = 0; j < buggers.length; j += 1) {
-        if (detectCollision(buggers[j], food)) {
-            over = 1;
+        for (k = 0; k < foods.length; k += 1) {
+            if (detectCollision(buggers[j], foods[k])) {
+                if (foods.length > 1) {
+                    foods.splice(k, 1);
+                    buggers.splice(j, 1);
+                } else {
+                    over = 1;
+                }
+            }
         }
     }
 
@@ -204,11 +222,11 @@ function getMousePos(canvas, evt) {
 }
 
 function detectCollision(a, b) {
-    return (b.y < a.y);
+    return (a.y > b.y || a.x == b.x + 50);
 }
 
 function draw() {
-    var k;
+    var k, g;
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
@@ -242,6 +260,8 @@ function draw() {
             }
             ctx.stroke();
             ctx.fill();
+            
+            var food = foods[0]
 
             if (bugger.x < food.x) {
                 bugger.x += (food.x + food.length - bugger.x) / ((food.y - bugger.y) / (bugger.speed * 0.06));
@@ -255,7 +275,11 @@ function draw() {
         
     }
     
-    ctx.drawImage(apple, food.x, food.y, 40, 40);
+    for (g = 0; g < foods.length; g += 1){
+        
+        var food = foods[g];
+        ctx.drawImage(apple, food.x, food.y, 40, 40);
+    }
     
     ctx.font = "16px Times New Roman";
     ctx.fillStyle = "black";
