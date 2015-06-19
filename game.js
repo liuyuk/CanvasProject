@@ -3,7 +3,7 @@ var ctx;
 
 var startingScore = 0;
 var score;
-var over = 0;
+var over = 5;
 
 var bugWidth = 10;
 var bugLength = 40;
@@ -23,7 +23,6 @@ bg.src = 'assets/bg1.png';
 var score = 0;
 
 var timer = 60;
-setInterval(updateTimer, 1000);
 
 var level = 1;
 
@@ -117,6 +116,20 @@ function init() {
     canvas = document.getElementById("myCanvas");
     ctx = canvas.getContext("2d");
     
+    if (over === 5){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = "50px Times New Roman";
+        ctx.fillStyle = "black";
+        ctx.fillText("TAP TAP BUG", 40, 200);
+        
+        ctx.font = "20px Times New Roman";
+        ctx.fillText("Please Select Difficulty:", 110, 260);
+        
+        ctx.fillText("Normal", 160, 350);
+        ctx.fillText("Hard", 170, 400);
+        
+    }
+    
     
     document.addEventListener('mousedown', function (event) {
 
@@ -138,6 +151,22 @@ function init() {
         
     if (over === 1 | over === 2) {
         location.reload();
+    }
+        
+    if (over === 5) {
+        if(mouseInBug(mouseX, mouseY, 160, 350, 60, 30)){
+            over = 0;
+            level = 1;
+            setInterval(updateTimer, 1000);
+            requestAnimation();
+        }
+        
+        if(mouseInBug(mouseX, mouseY, 170, 400, 60, 30)){
+            over = 0;
+            level = 2;
+            setInterval(updateTimer, 1000);
+            requestAnimation();
+        }
     }
                         
     }, false);
@@ -189,7 +218,8 @@ function requestAnimation() {
         ctx.fillStyle = "black";
         ctx.fillText("GAME OVER", 60, 320);
         ctx.font = "25px Times New Roman";
-        ctx.fillText("click to restart", 120, 370);
+        ctx.fillText("click to restart", 125, 410);
+        ctx.fillText("Your score is: " + score, 120, 370);
     }
     
     if (timer === 0) {
